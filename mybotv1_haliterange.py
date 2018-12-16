@@ -16,9 +16,9 @@ import logging
 game = hlt.Game()
 
 #factors
-ship_radarRangeMax = 5
-ship_haliteRangeMax = 2
-ship_distanceRangeMax = 2.0
+ship_radarRangeMax = 6
+ship_haliteRangeMax = 4
+ship_distanceRangeMax = 2.5
 
 
 #ship status
@@ -32,7 +32,6 @@ def navigateShip():
         else:
             command_queue.append(ship.move(Direction.invert(game_map.naive_navigate(ship, ship_target[ship.id]))))
 
-
 def safeMoveCheck():
     safe = bool(1)
     for x in range(-ship_radarRangeMax, ship_radarRangeMax, 1):
@@ -44,8 +43,8 @@ def safeMoveCheck():
     return safe
 
 def findHalite():
-    for x in range(-ship_haliteRangeMax, ship_haliteRangeMax, 1):
-        for y in range(-ship_haliteRangeMax , ship_haliteRangeMax, 1):
+    for x in range(-ship_haliteRangeMax, ship_haliteRangeMax, 2):
+        for y in range(-ship_haliteRangeMax , ship_haliteRangeMax, 2):
             if game_map[ship.position.directional_offset((x,y))].halite_amount != 0: #and game_map[ship.position.directional_offset((x,y))] not in ship_target:
                 if game_map[ship.position.directional_offset((x,y))].halite_amount > game_map[ship_target[ship.id]].halite_amount: #and game_map[ship.position.directional_offset((x,y))] not in ship_target:
                     if safeMoveCheck():
@@ -58,12 +57,12 @@ def gpsHome():
         for dropPoint in me.get_dropoffs():
             if game_map.calculate_distance(ship.position, dropPoint.position) <= game_map.calculate_distance(ship.position, me.shipyard.position):
                 ship_target[ship.id] = dropPoint.position
-            else:
-                ship_target[ship.id] = me.shipyard.position
+        else:
+            ship_target[ship.id] = me.shipyard.position
 
 
 # Respond with your name.
-game.ready("Ebcodeus-DropofftestCopyWeb")
+game.ready("Ebcodeus-Dropofftest")
 
 while True:
     # Get the latest game state.
@@ -105,10 +104,10 @@ while True:
             command_queue.append(ship.stay_still())
 
     # Spawn ship if halite is over 3000
-    if not game_map[me.shipyard].is_occupied and len(me.get_ships()) <= 5:
+    if not game_map[me.shipyard].is_occupied and len(me.get_ships()) <= 7:
         if game.turn_number <= 120 and me.halite_amount >= 2000:
             command_queue.append(me.shipyard.spawn())
-        elif me.halite_amount >= len(me.get_ships()) * 2000:
+        elif me.halite_amount >= len(me.get_ships()) * 1000:
             command_queue.append(me.shipyard.spawn())
 
     # Send your moves back to the game environment, ending this turn.
