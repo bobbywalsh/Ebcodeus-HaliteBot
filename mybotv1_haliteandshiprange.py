@@ -41,9 +41,9 @@ def findHalite():
         for y in range(-2 , 2, 1):
             if game_map[ship.position.directional_offset((x,y))].halite_amount > game_map[ship_target[ship.id]].halite_amount: #and game_map[ship.position.directional_offset((x,y))] not in ship_target:
                 if game.turn_number%2 == 1 and ship_target[ship.id] == ship.position.directional_offset((x,y)):
-                    ship_target[ship.id] = ship.position.directional_offset((x,y+1))
+                    ship_target[ship.id] = ship.position.directional_offset((x-1,y+1))
                 elif ship.position == ship.position.directional_offset((x,y)):
-                    ship_target[ship.id] == ship.position.directional_offset((x,y-1))
+                    ship_target[ship.id] == ship.position.directional_offset((x-1,y+1))
                 else:
                     ship_target[ship.id] = ship.position.directional_offset((x,y))
 
@@ -52,7 +52,7 @@ def gpsHome():
 
 
 # Respond with your name.
-game.ready("Ebcodeus")
+game.ready("Ebcodeus-Returnstatusset")
 
 while True:
     # Get the latest game state.
@@ -64,6 +64,11 @@ while True:
     # A command queue holds all the commands you will run this turn.
     command_queue = []
 
+    # Spawn ship if halite is over 3000
+    if not game_map[me.shipyard].is_occupied and me.halite_amount >= 1000 and game.turn_number < 100:
+        command_queue.append(me.shipyard.spawn())
+    elif not game_map[me.shipyard].is_occupied and me.halite_amount >= 5000:
+        command_queue.append(me.shipyard.spawn())
 
 
     for ship in me.get_ships():
@@ -90,13 +95,6 @@ while True:
                 gpsHome()
                 navigateShip()
 
-    # Spawn ship if halite is over 3000
-    if not game_map[me.shipyard].is_occupied and len(me.get_ships()) < 7:
-        if game.turn_number < 200 and me.halite_amount > 1000:
-            command_queue.append(me.shipyard.spawn())
-        else:
-            if me.halite_amount >= 5001:
-                command_queue.append(me.shipyard.spawn())
 
     # Send your moves back to the game environment, ending this turn.
     game.end_turn(command_queue)

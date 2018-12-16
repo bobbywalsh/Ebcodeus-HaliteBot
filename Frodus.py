@@ -69,7 +69,7 @@ while True:
 
         # For each of your ships, move randomly if the ship is on a low halite location or the ship is full.
         #   Else, collect halite.
-        if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full:
+        if game_map[ship.position].halite_amount*.1 <= ship.halite_amount and game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full:
             command_queue.append(ship.move(game_map.naive_navigate(ship, ship.position.directional_offset(target_location_offset))))
         else:
             command_queue.append(ship.stay_still())
